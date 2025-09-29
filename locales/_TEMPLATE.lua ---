@@ -1,0 +1,11 @@
+-- la_peditor/locales/_TEMPLATE.lua
+-- theme="1950s-cartoon-noir"
+-- Translation template. Copy this file to create new language files (e.g., fr.lua, es-ES.lua).
+-- Keep keys equal to en.lua; translate the right-hand strings.
+
+local translations = {
+    ["open_menu"] = "Press ~INPUT_CONTEXT~ to open the Appearance Menu. (theme=\"1950s-cartoon-noir\")",
+    -- ... copy all keys from en.lua here and translate ...
+}
+
+return translations

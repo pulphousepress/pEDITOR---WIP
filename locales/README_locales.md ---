@@ -1,0 +1,13 @@
+README_locales.md ---
+
+# la_peditor Locales (1950s-cartoon-noir)
+
+Files placed under `locales/` provide translation tables.
+
+- `locales.lua` loads languages and exposes a backward-compatible `_L(key, ...)` global if none is present.
+- `en.lua` contains English translations used by the resource.
+- Use `_TEMPLATE.lua` as a starting point for additional languages.
+
+**Notes**
+- Strings include theme metadata where useful (e.g., theme="1950s-cartoon-noir").
+- For future refactor, call `exports['la_peditor']:GetLocale()` instead of relying on global `_L`.

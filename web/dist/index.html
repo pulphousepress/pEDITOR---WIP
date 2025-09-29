@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Los Animales — Appearance (la_peditor)</title>
+  <style>
+    :root{
+      --panel:#1f1711;
+      --accent:#d1ad55;
+      --muted:#8b7760;
+      --text:#f6e9d8;
+    }
+
+    /* Full-page browser is normal for FiveM NUI; make page transparent and non-interactive
+       so only the panel handles clicks (player can still see the world behind). */
+    html,body{
+      height:100%;
+      margin:0;
+      background:transparent;
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      color:var(--text);
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      user-select: none;
+    }
+
+    /* Prevent clicks from hitting empty page area */
+    body { pointer-events: none; }
+
+    /* Centered floating panel — this is the only area that receives pointer events */
+    .panel{
+      position:fixed;
+      left:50%;
+      top:50%;
+      transform:translate(-50%,-50%);
+      width:640px;
+      max-width:92%;
+      background:linear-gradient(180deg, rgba(31,23,17,0.98), rgba(20,16,13,0.95));
+      border-radius:12px;
+      padding:18px;
+      box-shadow:0 10px 40px rgba(0,0,0,0.7);
+      border:1px solid rgba(209,173,85,0.06);
+      pointer-events: auto; /* allow interactions inside panel */
+      max-height:80vh;
+      overflow:auto;
+    }
+
+    .title{font-weight:700;font-size:18px;margin-bottom:6px;}
+    .subtitle{font-size:13px;color:var(--muted);margin-bottom:12px;}
+    .toolbar{display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+    button{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.06);
+      padding:8px 10px;border-radius:6px;color:var(--text);
+      cursor:pointer;font-size:13px;
+    }
+
+    .log{
+      height:140px;
+      overflow:auto;
+      background:rgba(0,0,0,0.06);
+      padding:10px;border-radius:6px;
+      border:1px solid rgba(255,255,255,0.02);
+      font-family:monospace;font-size:12px;color:var(--muted);
+      white-space:pre-wrap;
+    }
+
+    .hidden{display:none;}
+    .themeTag{position:fixed;right:12px;bottom:12px;font-size:12px;color:var(--muted);pointer-events:none;}
+  </style>
+</head>
+<body>
+  <div id="panel" class="panel hidden" aria-hidden="true" role="dialog" aria-label="Los Animales appearance UI">
+    <div class="title">Los Animales — Appearance</div>
+    <div class="subtitle">A vintage-themed test interface <small style="opacity:.9">(theme="1950s-cartoon-noir")</small></div>
+
+    <div class="toolbar">
+      <button id="btnPing" type="button">Ping (NUI test)</button>
+      <button id="btnHide" type="button">Hide NUI</button>
+      <button id="btnClose" type="button" title="Close">Close</button>
+    </div>
+
+    <div id="log" class="log" aria-live="polite"></div>
+  </div>
+
+  <div class="themeTag">theme="1950s-cartoon-noir"</div>
+
+  <!-- load the external script -->
+  <script src="script.js"></script>
+</body>
+</html>
