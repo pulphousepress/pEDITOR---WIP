@@ -5,21 +5,13 @@
 if not la_peditor then la_peditor = {} end
 local la = la_peditor
 local Config = la.Config or {}
-
-local function getCoreObject()
-    if la and la.GetCoreObject then
-        return la.GetCoreObject()
-    end
-    return nil
-end
-
-local QBCore = getCoreObject()
+local Framework = la.Framework or {}
 local Blips = {}
 local activeNearestThread = nil
 
 local function safeGetPlayerData()
-    if QBCore and type(QBCore.Functions.GetPlayerData) == "function" then
-        local ok, pdata = pcall(QBCore.Functions.GetPlayerData)
+    if Framework and type(Framework.GetPlayerData) == 'function' then
+        local ok, pdata = pcall(Framework.GetPlayerData)
         if ok and pdata then return pdata end
     end
     return {}
