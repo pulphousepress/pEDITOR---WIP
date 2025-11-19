@@ -2,21 +2,21 @@
 
 ## 📑 Table of Contents
 - [UX Principles (player-facing)](#ux-principles-player-facing)  
-- [Permissions & Commands (staff)](#permissions--commands-staff)
-- [Money & Items (hook points)](#-money--items-hook-points)
-- [Data Model (server-side)](#-data-model-server-side)
-- [Origins (lore-friendly presets + custom)](#-origins-lore-friendly-presets--custom)
-- [Edit Points (shops/locations)](#-edit-points-shopslocations)
-- [Wardrobes](#-wardrobes)
+- [Permissions & Commands (staff)](#permissions--commands-staff)  
+- [Money & Items (hook points)](#-money--items-hook-points)  
+- [Data Model (server-side)](#-data-model-server-side)  
+- [Origins (lore-friendly presets + custom)](#-origins-lore-friendly-presets--custom)  
+- [Edit Points (shops/locations)](#-edit-points-shopslocations)  
+- [Wardrobes](#-wardrobes)  
 - [Programmatic Open](#️-programmatic-open-for-housingraid-scripts)
+- [Asset Packs (drag & drop)](#-asset-packs-drag--drop)
 - [Editor Menu](#-editor-menu)
-- [Hooks & Exports](#-hooks--exports)
-- [Anti-Grief](#-anti-grief)
-- [Camera Controls](#-camera-controls)
-- [Passport / First-Run Flow](#-passport--first-run-flow)
-- [Los Animales / QBox wrapper quick-start](#-los-animales--qbox-wrapper-quick-start)
-- [Installation](#-installation)
-- [Roadmap](#-roadmap-next-steps)
+- [Hooks & Exports](#-hooks--exports)  
+- [Anti-Grief](#-anti-grief)  
+- [Camera Controls](#-camera-controls)  
+- [Passport / First-Run Flow](#-passport--first-run-flow)  
+- [Installation](#-installation)  
+- [Roadmap](#-roadmap-next-steps)  
 
 ---
 
@@ -26,7 +26,7 @@ One-key menu. Binds a single key/command to open the editor (default `/pe` and k
 
 Code-driven UI. No brittle XML—components are defined in config (json/lua).
 
-Drag-n-drop assets. Import masks, clothes, hair, beards, etc. by updating config + simple manifest tweak if needed.
+Drag-n-drop assets. Import masks, clothes, hair, beards, etc. by dropping new JSON packs into `config/assetpacks/` (see [Asset Packs](#-asset-packs-drag--drop)).
 
 Server tools. Staff commands to open editor for self/others; set/reset ped models globally or per player.
 
@@ -108,7 +108,7 @@ Refer to `client/common.lua` for the full list of exports/events.
 | `/delped [id]` | Staff only | Clears forced model; reverts to player’s saved model. |
 | `/pe` | Everyone | Opens PEDitor immediately (also bound to Config.OpenKey, default `K`). |
 
-Players can open the editor via your chosen keybind or `/pe` (configurable).
+Players can open the editor via `/pe` (default command) or by pressing the configured keybind (`Config.OpenKey`, defaults to `F7`).
 
 ---
 
@@ -210,6 +210,38 @@ TriggerClientEvent("peditor:openWardrobe", playerId, "apt_12")
 
 ---
 
+## 🎨 Asset Packs (drag & drop)
+
+- Base definitions live in `config/assetpacks/base.json`. The loader reads every file listed in `config/assetpacks/index.json` or the optional `Config.AssetPacks` array.
+- Drop a new JSON file into `config/assetpacks/`, add its relative path to the index (or `Config.AssetPacks`), restart pEditor, and the assets become available immediately.
+- Each pack may contain `props`, `components`, `hair`, and `beards` sections; the loader normalizes slot names (e.g., `hats`, `masks`) into the correct component/prop ids.
+- Assets are exposed to the UI (NUI shows a summary panel) and to scripts via the new exports/events.
+
+Example pack entry:
+
+```json
+{
+  "name": "Studio Pack",
+  "props": {
+    "hats": [{ "id": "hat_director", "drawable": 9, "texture": 2 }]
+  },
+  "components": {
+    "masks": [{ "id": "mask_sci", "component_id": 1, "drawable": 45, "texture": 0 }]
+  },
+  "hair": [{ "id": "hair_bob", "drawable": 6, "texture": 1, "color": 4 }],
+  "beards": [{ "id": "beard_anchor", "style": 7, "overlay": 1, "opacity": 0.75 }]
+}
+```
+
+Apply assets from code or other scripts:
+
+```lua
+exports['la_peditor']:ApplyAsset('mask_raccoon_default')               -- instantly equips a mask
+TriggerEvent('la_peditor:client:applyAsset', 'hat_widebrim_black')     -- works from client-side scripts
+```
+
+---
+
 ## 📝 Editor Menu
 
 ```lua
@@ -232,11 +264,20 @@ exports("OnOpenWardrobe", function(playerId, wardrobeId) return true end)
 ```
 
 ### Events
-- `peditor:requestOpen(type, context)` → client → server  
-- `peditor:save(data)` → client → server  
-- `peditor:openEditor(context)` → server → client  
-- `peditor:openWardrobe(id)` → server → client  
-- `peditor:notify(level, message)` → server → client  
+- `peditor:requestOpen(type, context)` → client → server
+- `peditor:save(data)` → client → server
+- `peditor:openEditor(context)` → server → client
+- `peditor:openWardrobe(id)` → server → client
+- `peditor:notify(level, message)` → server → client
+
+### Client Exports & Events
+
+```lua
+local appearance = exports['la_peditor']:la_peditor_getPedAppearance()
+exports['la_peditor']:la_peditor_setPlayerModel('mp_m_freemode_01')
+exports['la_peditor']:ApplyAsset('hat_widebrim_black')
+TriggerEvent('la_peditor:client:applyAsset', 'mask_raccoon_default')
+```
 
 ---
 

@@ -8,10 +8,15 @@ local la = la_peditor
 la.Framework = la.Framework or {}
 local Framework = la.Framework
 
--- defensive QBCore/qbx access (namespaced helper)
-local function getCoreObject()
-    if la and la.GetCoreObject then
-        return la.GetCoreObject()
+local function getPlayerData()
+    if type(Framework.GetPlayerData) == 'function' then
+        local ok, pdata = pcall(Framework.GetPlayerData)
+        if ok and pdata then return pdata end
+    end
+    local qb = Framework.GetCoreObject and Framework.GetCoreObject()
+    if qb and qb.Functions and type(qb.Functions.GetPlayerData) == 'function' then
+        local ok, pdata = pcall(qb.Functions.GetPlayerData)
+        if ok and pdata then return pdata end
     end
     return nil
 end
@@ -20,26 +25,22 @@ end
 -- Tries several common qb/qbx character fields, falls back to ped model detection.
 -- Always returns "male" or "female" (lowercase) for consistency.
 function Framework.GetPlayerGender()
-    local QBCore = getCoreObject()
-    -- 1) Try QB core player data charinfo
-    if QBCore and type(QBCore.Functions) == "table" then
-        local ok, pdata = pcall(function() return QBCore.Functions.GetPlayerData() end)
-        if ok and pdata then
-            if pdata.charinfo and pdata.charinfo.gender then
-                local g = tostring(pdata.charinfo.gender):lower()
-                if g == "female" or g == "f" then return "female" end
-                if g == "male" or g == "m" then return "male" end
-            end
-            if pdata.gender then
-                local g = tostring(pdata.gender):lower()
-                if g == "female" or g == "f" then return "female" end
-                if g == "male" or g == "m" then return "male" end
-            end
-            if pdata.metadata and pdata.metadata.gender then
-                local g = tostring(pdata.metadata.gender):lower()
-                if g == "female" or g == "f" then return "female" end
-                if g == "male" or g == "m" then return "male" end
-            end
+    local pdata = getPlayerData()
+    if pdata then
+        if pdata.charinfo and pdata.charinfo.gender then
+            local g = tostring(pdata.charinfo.gender):lower()
+            if g == 'female' or g == 'f' then return 'female' end
+            if g == 'male' or g == 'm' then return 'male' end
+        end
+        if pdata.gender then
+            local g = tostring(pdata.gender):lower()
+            if g == 'female' or g == 'f' then return 'female' end
+            if g == 'male' or g == 'm' then return 'male' end
+        end
+        if pdata.metadata and pdata.metadata.gender then
+            local g = tostring(pdata.metadata.gender):lower()
+            if g == 'female' or g == 'f' then return 'female' end
+            if g == 'male' or g == 'm' then return 'male' end
         end
     end
 

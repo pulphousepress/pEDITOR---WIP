@@ -5,6 +5,7 @@
 
 if not la_peditor then la_peditor = {} end
 local la = la_peditor
+local Framework = la.Framework or {}
 local M = {}
 local createdZones = {}
 
@@ -32,6 +33,24 @@ local function export_call(exportObj, methodNames, ...)
     return nil, "no-matching-method"
 end
 
+local function canUseStore(store)
+    if not store.job and not store.gang then return true end
+    if Framework and type(Framework.GetPlayerData) == 'function' then
+        local ok, pdata = pcall(Framework.GetPlayerData)
+        if ok and pdata then
+            if store.job and store.job ~= '' then
+                if not (pdata.job and pdata.job.name == store.job) then return false end
+            end
+            if store.gang and store.gang ~= '' then
+                if not (pdata.gang and pdata.gang.name == store.gang) then return false end
+            end
+            return true
+        end
+    end
+    if store.job or store.gang then return false end
+    return true
+end
+
 local function addBoxZone(store)
     local target = exports and exports['ox_target']
     if not target then return nil, "no-ox-target" end
@@ -52,16 +71,8 @@ local function addBoxZone(store)
                 label = store.label or ("Open " .. tostring(store.type or "store")),
                 icon = store.icon or "fa-solid fa-shirtsinbulk",
                 onSelect = function(data) TriggerEvent("la_peditor:client:openClothingShopMenu", false) end,
-                canInteract = function(entity, distance, coords, name)
-                    if store.job and store.job ~= nil then
-                        local pd = getPlayerData()
-                        if not (pd and pd.job and pd.job.name == store.job) then return false end
-                    end
-                    if store.gang and store.gang ~= nil then
-                        local pd = getPlayerData()
-                        if not (pd and pd.gang and pd.gang.name == store.gang) then return false end
-                    end
-                    return true
+                canInteract = function()
+                    return canUseStore(store)
                 end
             }
         }
