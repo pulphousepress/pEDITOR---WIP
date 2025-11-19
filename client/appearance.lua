@@ -72,22 +72,3 @@ AddEventHandler("playerSpawned", function()
         InitializeAppearance()
     end)
 end)
-
--- Self-test command for admins/devs
-RegisterCommand("la_peditor_test", function()
-    local ped = PlayerPedId()
-    local ok = ped and DoesEntityExist(ped)
-
-    TriggerEvent("chat:addMessage", {
-        color = { 200, 180, 80 },
-        multiline = false,
-        args = { "la_peditor", ok and "✅ Client self-test passed (1950s-cartoon-noir)" or "❌ No valid ped found" }
-    })
-
-    print("[la_peditor] Self-test run. QBCore present:", tostring(QBCore ~= nil))
-    if ok then
-        local head = GetDefaultHeadMask()
-        local current = GetPedDrawableVariation(ped, head.component_id)
-        print(("[la_peditor] Current head drawable: %s — default expected: %s"):format(current, head.drawable))
-    end
-end, false)
