@@ -8,8 +8,6 @@ local la = la_peditor
 la.Management = la.Management or {}
 local Management = la.Management
 
-local QBCore = nil
-pcall(function() if exports and exports['qb-core'] then QBCore = exports['qb-core']:GetCoreObject() end end)
 local lib = la.lib or (type(_G)=='table' and rawget(_G, "lib")) or nil
 
 -- Internal registry of created menus so AddItems/RemoveItems are idempotent

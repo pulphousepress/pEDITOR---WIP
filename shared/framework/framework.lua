@@ -8,12 +8,9 @@ local Framework = la_peditor.Framework
 
 -- Try to acquire QBCore (supports qb-core and qbx_core). Do not force global.
 local function getQBCore()
-    if la_peditor and la_peditor.QBCore then return la_peditor.QBCore end
-    if exports and exports['qb-core'] and type(exports['qb-core'].GetCoreObject) == "function" then
-        return exports['qb-core']:GetCoreObject()
-    end
-    if exports and exports['qbx_core'] and type(exports['qbx_core'].GetCoreObject) == "function" then
-        return exports['qbx_core']:GetCoreObject()
+    if la_peditor and la_peditor.GetCoreObject then
+        local qb = la_peditor.GetCoreObject()
+        if qb then return qb end
     end
     return nil
 end

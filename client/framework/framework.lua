@@ -8,18 +8,19 @@ local la = la_peditor
 la.Framework = la.Framework or {}
 local Framework = la.Framework
 
--- defensive QBCore access
-local QBCore = nil
-pcall(function()
-    if exports and exports['qb-core'] and type(exports['qb-core'].GetCoreObject) == "function" then
-        QBCore = exports['qb-core']:GetCoreObject()
+-- defensive QBCore/qbx access (namespaced helper)
+local function getCoreObject()
+    if la and la.GetCoreObject then
+        return la.GetCoreObject()
     end
-end)
+    return nil
+end
 
 -- Return player's stored/character gender where possible.
 -- Tries several common qb/qbx character fields, falls back to ped model detection.
 -- Always returns "male" or "female" (lowercase) for consistency.
 function Framework.GetPlayerGender()
+    local QBCore = getCoreObject()
     -- 1) Try QB core player data charinfo
     if QBCore and type(QBCore.Functions) == "table" then
         local ok, pdata = pcall(function() return QBCore.Functions.GetPlayerData() end)

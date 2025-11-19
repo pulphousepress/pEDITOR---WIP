@@ -8,8 +8,12 @@ local la = la_peditor
 la.Framework = la.Framework or {}
 local Framework = la.Framework
 
-local QBCore = nil
-pcall(function() if exports and exports['qb-core'] then QBCore = exports['qb-core']:GetCoreObject() end end)
+local function getCoreObject()
+    if la and la.GetCoreObject then
+        return la.GetCoreObject()
+    end
+    return nil
+end
 
 function Framework.GetRankInputValues(typeStr)
     local out = {}
@@ -21,6 +25,7 @@ function Framework.GetRankInputValues(typeStr)
 end
 
 function Framework.IsPlayerBoss()
+    local QBCore = getCoreObject()
     if not QBCore then return false end
     local pd = nil
     pcall(function() pd = QBCore.Functions.GetPlayerData() end)

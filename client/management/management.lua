@@ -7,10 +7,25 @@ if not la_peditor then la_peditor = {} end
 local la = la_peditor
 la.Management = la.Management or {}
 local Management = la.Management
-local QBCore = nil
-pcall(function() if exports and exports['qb-core'] then QBCore = exports['qb-core']:GetCoreObject() end end)
+
+local function getCoreObject()
+    if la and la.GetCoreObject then
+        return la.GetCoreObject()
+    end
+    return nil
+end
+
 local lib = la.lib or (type(_G)=='table' and rawget(_G, "lib")) or nil
 local Framework = la.Framework or {}
+
+local function getPlayerData()
+    local QBCore = getCoreObject()
+    if QBCore and QBCore.Functions and type(QBCore.Functions.GetPlayerData) == "function" then
+        local ok, pd = pcall(QBCore.Functions.GetPlayerData)
+        if ok then return pd end
+    end
+    return nil
+end
 
 -- Build and register the management menu for the player's job/gang (client-side)
 function Management.AddItems()
@@ -55,10 +70,7 @@ function Management.AddItems()
     end
 
     RegisterCommand("la_manageoutfits", function()
-        local player = nil
-        if QBCore and QBCore.Functions and type(QBCore.Functions.GetPlayerData) == "function" then
-            pcall(function() player = QBCore.Functions.GetPlayerData() end)
-        end
+        local player = getPlayerData()
         local isBoss = (player and player.job and player.job.isboss)
         if isBoss then
             if lib and type(lib.showContext) == "function" then
@@ -139,10 +151,7 @@ end)
 
 RegisterNetEvent("la_peditor:client:SaveManagementOutfit", function(mType)
     mType = mType or "Job"
-    local pd = nil
-    if QBCore and QBCore.Functions and type(QBCore.Functions.GetPlayerData) == "function" then
-        pcall(function() pd = QBCore.Functions.GetPlayerData() end)
-    end
+    local pd = getPlayerData()
     local jobName = (mType == "Job") and (pd and pd.job and pd.job.name) or (pd and pd.gang and pd.gang.name)
 
     local rankOptions = (Framework and Framework.GetRankInputValues and Framework.GetRankInputValues(mType:lower())) or {
