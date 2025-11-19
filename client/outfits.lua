@@ -8,7 +8,6 @@ if not la_peditor then la_peditor = {} end
 local la = la_peditor
 local Config = la.Config or {}
 local Framework = la.Framework or {}
-local QBCore = (exports['qb-core'] and exports['qb-core']:GetCoreObject()) or nil
 local lib = la.lib or (type(_G)=='table' and _G.lib) or nil
 
 -- local helper to detect metatype names or primitive types (keeps original behaviour)

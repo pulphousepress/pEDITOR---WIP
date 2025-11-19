@@ -17,23 +17,29 @@ local function log(level, ...)
     end
 end
 
--- Defensive QBCore detection (supports qb-core and qbx_core)
-local function getQBCore()
+local QBCore = nil
+if Framework and type(Framework.GetCoreObject) == 'function' then
+    local ok, qb = pcall(Framework.GetCoreObject)
+    if ok then QBCore = qb end
+end
+if not QBCore then
     local ok, qb = pcall(function()
-        if exports and exports['qb-core'] and type(exports['qb-core'].GetCoreObject) == "function" then
+        if exports and exports['qb-core'] and type(exports['qb-core'].GetCoreObject) == 'function' then
             return exports['qb-core']:GetCoreObject()
-        elseif exports and exports['qbx_core'] and type(exports['qbx_core'].GetCoreObject) == "function" then
+        elseif exports and exports['qbx_core'] and type(exports['qbx_core'].GetCoreObject) == 'function' then
             return exports['qbx_core']:GetCoreObject()
-        elseif rawget(_G, "QBCore") then
-            return rawget(_G, "QBCore")
+        elseif rawget(_G, 'QBCore') then
+            return rawget(_G, 'QBCore')
         end
         return nil
     end)
-    if ok then return qb end
-    return nil
+    if ok then QBCore = qb end
 end
-
-local QBCore = getQBCore()
+if not QBCore and Framework and type(Framework.WhenCoreReady) == 'function' then
+    Framework.WhenCoreReady(function(core)
+        QBCore = core
+    end)
+end
 local lib = la_peditor.lib or (type(_G) == "table" and rawget(_G, "lib")) or nil
 local Database = la_peditor.Database or (pcall(require, "la_peditor.server.database.database") and la_peditor.Database) or nil
 local Config = la_peditor.Config or {}

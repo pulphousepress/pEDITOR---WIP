@@ -3,14 +3,23 @@
 -- Author: Pulphouse Press
 -- la_peditor main client bootstrap (replaces bostra_appearance client entry)
 
-local QBCore = exports['qb-core']:GetCoreObject()
+if not la_peditor then la_peditor = {} end
+local la = la_peditor
+local Config = la.Config or {}
+local Assets = la.Assets or {}
+local SharedPeds = la.SharedPeds or {}
 local initialized = false
 
 -- Fallback default animal head (component 1 = head/mask slot)
 local FALLBACK_ANIMAL_HEAD = { component_id = 1, drawable = 21, texture = 0 } -- raccoon
 
 local function GetDefaultHeadMask()
-    -- Prefer shared helper (if shared/peds.lua loaded), otherwise fallback
+    if Config and Config.DefaultMaskAsset and Assets and type(Assets.FindEntryById) == 'function' then
+        local entry = Assets.FindEntryById(Config.DefaultMaskAsset)
+        if entry and entry.type == 'component' then
+            return { component_id = entry.component_id, drawable = entry.drawable or 0, texture = entry.texture or 0 }
+        end
+    end
     if type(SharedPeds) == "table" and type(SharedPeds.GetHeadMask) == "function" then
         local mask = SharedPeds.GetHeadMask("raccoon")
         if mask and mask.component_id and mask.drawable then

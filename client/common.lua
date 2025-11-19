@@ -6,12 +6,12 @@ if not la_peditor then la_peditor = {} end
 local la = la_peditor
 local Config = la.Config or {}
 local Management = la.Management or {}
-local QBCore = (exports['qb-core'] and exports['qb-core']:GetCoreObject()) or nil
+local Framework = la.Framework or {}
 local lib = la.lib or (type(_G)=='table' and _G.lib) or nil
 
 local function getPlayerData()
-    if QBCore and type(QBCore.Functions) == "table" and type(QBCore.Functions.GetPlayerData) == "function" then
-        local ok, pdata = pcall(QBCore.Functions.GetPlayerData)
+    if Framework and type(Framework.GetPlayerData) == 'function' then
+        local ok, pdata = pcall(Framework.GetPlayerData)
         if ok and pdata then return pdata end
     end
     return {}

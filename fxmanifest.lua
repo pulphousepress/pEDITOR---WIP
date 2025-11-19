@@ -12,7 +12,6 @@ lua54 'yes'
 -- We prefer qbx_core (you said you use qbx_core). If your server uses qb-core instead, change qbx_core -> qb-core.
 
 dependencies {
-    'qbx_core',
     'ox_lib',
     'oxmysql'
 }
@@ -24,6 +23,7 @@ shared_scripts {
     'shared/theme.lua',
     'shared/blacklist.lua',
     'shared/peds.lua',
+    'shared/assets.lua',
     'shared/tattoos.lua',
     'shared/framework/**/*.lua'
 }
@@ -68,14 +68,17 @@ server_scripts {
 files {
     'web/dist/index.html',
     'web/dist/*',
-    'web/dist/**/*'
+    'web/dist/**/*',
+    'config/assetpacks/index.json',
+    'config/assetpacks/*.json'
 }
 ui_page 'web/dist/index.html'
 
 -- Exports (runtime helpers)
 exports {
     'la_peditor_getPedAppearance',
-    'la_peditor_setPlayerModel'
+    'la_peditor_setPlayerModel',
+    'ApplyAsset'
 }
 
 provides {
