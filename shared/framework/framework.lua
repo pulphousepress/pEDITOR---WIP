@@ -5,22 +5,44 @@
 if not la_peditor then la_peditor = {} end
 la_peditor.Framework = la_peditor.Framework or {}
 local Framework = la_peditor.Framework
+local isServer = IsDuplicityVersion and IsDuplicityVersion() or false
 
 -- Try to acquire QBCore (supports qb-core and qbx_core). Do not force global.
 local function getQBCore()
     if la_peditor and la_peditor.QBCore then return la_peditor.QBCore end
-    if exports and exports['qb-core'] and type(exports['qb-core'].GetCoreObject) == "function" then
-        return exports['qb-core']:GetCoreObject()
+    if exports then
+        if exports['qb-core'] and type(exports['qb-core'].GetCoreObject) == "function" then
+            return exports['qb-core']:GetCoreObject()
+        end
+        if exports['qbx_core'] and type(exports['qbx_core'].GetCoreObject) == "function" then
+            return exports['qbx_core']:GetCoreObject()
+        end
+        if exports['qbx-core'] and type(exports['qbx-core'].GetCoreObject) == "function" then
+            return exports['qbx-core']:GetCoreObject()
+        end
     end
-    if exports and exports['qbx_core'] and type(exports['qbx_core'].GetCoreObject) == "function" then
-        return exports['qbx_core']:GetCoreObject()
+    if rawget(_G, 'QBCore') then
+        return rawget(_G, 'QBCore')
     end
     return nil
 end
 
+Framework._coreCallbacks = Framework._coreCallbacks or {}
+
+local function onCoreBound(core)
+    if not core then return end
+    la_peditor.QBCore = core
+    Framework.qb = core
+    if Framework._coreCallbacks then
+        for _, cb in ipairs(Framework._coreCallbacks) do
+            pcall(cb, core)
+        end
+        Framework._coreCallbacks = {}
+    end
+end
+
 Framework.qb = getQBCore()
 if not Framework.qb then
-    -- attempt a deferred bind (non-blocking)
     CreateThread(function()
         local tries = 0
         while not Framework.qb and tries < 25 do
@@ -32,24 +54,55 @@ if not Framework.qb then
             print("[la_peditor/framework] QBCore not bound — some features will be limited.")
         else
             print("[la_peditor/framework] QBCore bound (deferred).")
+            onCoreBound(Framework.qb)
         end
     end)
 else
     print("[la_peditor/framework] QBCore bound.")
+    onCoreBound(Framework.qb)
+end
+
+function Framework.GetCoreObject()
+    if Framework.qb then return Framework.qb end
+    Framework.qb = getQBCore()
+    if Framework.qb then
+        onCoreBound(Framework.qb)
+    end
+    return Framework.qb
+end
+
+function Framework.WhenCoreReady(cb)
+    if type(cb) ~= 'function' then return end
+    if Framework.qb then
+        cb(Framework.qb)
+        return
+    end
+    Framework._coreCallbacks = Framework._coreCallbacks or {}
+    Framework._coreCallbacks[#Framework._coreCallbacks + 1] = cb
 end
 
 -- Protected function wrappers
 function Framework.GetPlayer(source)
-    if not Framework.qb or type(Framework.qb.Functions.GetPlayer) ~= "function" then return nil end
-    local ok, player = pcall(Framework.qb.Functions.GetPlayer, source)
+    local qb = Framework.GetCoreObject()
+    if not qb or type(qb.Functions.GetPlayer) ~= "function" then return nil end
+    local ok, player = pcall(qb.Functions.GetPlayer, source)
     if ok then return player end
     return nil
 end
 
 function Framework.HasTracker(source)
-    local player = Framework.GetPlayer(source)
-    if not player or not player.PlayerData or not player.PlayerData.metadata then return false end
-    return player.PlayerData.metadata["tracker"] == true
+    if isServer then
+        local player = Framework.GetPlayer(source)
+        if not player or not player.PlayerData or not player.PlayerData.metadata then return false end
+        return player.PlayerData.metadata["tracker"] == true
+    end
+    if type(Framework.GetPlayerData) == 'function' then
+        local ok, pdata = pcall(Framework.GetPlayerData)
+        if ok and pdata and pdata.metadata then
+            return pdata.metadata['tracker'] == true
+        end
+    end
+    return false
 end
 
 function Framework.GetIdentifier(source)
@@ -84,12 +137,24 @@ end
 
 function Framework.Notify(src, msg, typ)
     -- Use QBCore notify if available, else fallback to chat message.
-    if Framework.qb and type(Framework.qb.Functions.Notify) == "function" then
-        pcall(function() Framework.qb.Functions.Notify(src, msg, typ) end)
+    local qb = Framework.GetCoreObject()
+    if qb and type(qb.Functions.Notify) == "function" then
+        pcall(function() qb.Functions.Notify(src, msg, typ) end)
         return
     end
     -- fallback: trigger the legacy event
     pcall(function() TriggerClientEvent('QBCore:Notify', src, msg, typ or 'primary') end)
+end
+
+if not isServer then
+    function Framework.GetPlayerData()
+        local qb = Framework.GetCoreObject()
+        if qb and qb.Functions and type(qb.Functions.GetPlayerData) == 'function' then
+            local ok, data = pcall(qb.Functions.GetPlayerData)
+            if ok then return data end
+        end
+        return nil
+    end
 end
 
 -- Explicit compatibility shim for older code that expects Framework global.

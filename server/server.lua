@@ -5,14 +5,6 @@
 if not la_peditor then la_peditor = {} end
 local la = la_peditor
 local ServerUtil = la.ServerUtil or {}
-local QBCore = nil
-
--- defensive QBCore access (if present)
-pcall(function()
-    if exports and exports['qb-core'] and type(exports['qb-core'].GetCoreObject) == "function" then
-        QBCore = exports['qb-core']:GetCoreObject()
-    end
-end)
 
 -- Helper to validate an appearance table minimally
 local function isValidAppearance(appearance)
