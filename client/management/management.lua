@@ -7,8 +7,15 @@ if not la_peditor then la_peditor = {} end
 local la = la_peditor
 la.Management = la.Management or {}
 local Management = la.Management
-local QBCore = nil
-pcall(function() if exports and exports['qb-core'] then QBCore = exports['qb-core']:GetCoreObject() end end)
+
+local function getCoreObject()
+    if la and la.GetCoreObject then
+        return la.GetCoreObject()
+    end
+    return nil
+end
+
+local QBCore = getCoreObject()
 local lib = la.lib or (type(_G)=='table' and rawget(_G, "lib")) or nil
 local Framework = la.Framework or {}
 

@@ -5,7 +5,15 @@
 if not la_peditor then la_peditor = {} end
 local la = la_peditor
 local Config = la.Config or {}
-local QBCore = (exports['qb-core'] and exports['qb-core']:GetCoreObject()) or nil
+
+local function getCoreObject()
+    if la and la.GetCoreObject then
+        return la.GetCoreObject()
+    end
+    return nil
+end
+
+local QBCore = getCoreObject()
 local Blips = {}
 local activeNearestThread = nil
 

@@ -8,13 +8,9 @@ local Framework = la_peditor.Framework
 
 -- Defensive QBCore detection (supports qb-core and qbx_core)
 local function getQBCore()
-    if exports and exports['qb-core'] and type(exports['qb-core'].GetCoreObject) == "function" then
-        return exports['qb-core']:GetCoreObject()
+    if la_peditor and la_peditor.GetCoreObject then
+        return la_peditor.GetCoreObject()
     end
-    if exports and exports['qbx_core'] and type(exports['qbx_core'].GetCoreObject) == "function" then
-        return exports['qbx_core']:GetCoreObject()
-    end
-    if rawget(_G, "QBCore") then return rawget(_G, "QBCore") end
     return nil
 end
 

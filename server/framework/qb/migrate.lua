@@ -19,17 +19,9 @@ end
 
 -- Defensive QBCore detection (supports qb-core and qbx_core)
 local function getQBCore()
-    local ok, qb = pcall(function()
-        if exports and exports['qb-core'] and type(exports['qb-core'].GetCoreObject) == "function" then
-            return exports['qb-core']:GetCoreObject()
-        elseif exports and exports['qbx_core'] and type(exports['qbx_core'].GetCoreObject) == "function" then
-            return exports['qbx_core']:GetCoreObject()
-        elseif rawget(_G, "QBCore") then
-            return rawget(_G, "QBCore")
-        end
-        return nil
-    end)
-    if ok then return qb end
+    if la_peditor and la_peditor.GetCoreObject then
+        return la_peditor.GetCoreObject()
+    end
     return nil
 end
 

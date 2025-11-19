@@ -3,7 +3,17 @@
 -- Author: Pulphouse Press
 -- la_peditor main client bootstrap (replaces bostra_appearance client entry)
 
-local QBCore = exports['qb-core']:GetCoreObject()
+if not la_peditor then la_peditor = {} end
+local la = la_peditor
+
+local function getCoreObject()
+    if la and la.GetCoreObject then
+        return la.GetCoreObject()
+    end
+    return nil
+end
+
+local QBCore = getCoreObject()
 local initialized = false
 
 -- Fallback default animal head (component 1 = head/mask slot)

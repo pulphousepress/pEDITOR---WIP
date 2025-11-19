@@ -8,8 +8,14 @@ local la = la_peditor
 la.Framework = la.Framework or {}
 local Framework = la.Framework
 
-local QBCore = nil
-pcall(function() if exports and exports['qb-core'] then QBCore = exports['qb-core']:GetCoreObject() end end)
+local function getCoreObject()
+    if la and la.GetCoreObject then
+        return la.GetCoreObject()
+    end
+    return nil
+end
+
+local QBCore = getCoreObject()
 
 function Framework.GetRankInputValues(typeStr)
     local out = {}

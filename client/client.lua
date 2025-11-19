@@ -5,7 +5,15 @@
 if not la_peditor then la_peditor = {} end
 local la = la_peditor
 local Config = la.Config or {}
-local QBCore = (exports['qb-core'] and exports['qb-core']:GetCoreObject()) or nil
+
+local function getCoreObject()
+    if la and la.GetCoreObject then
+        return la.GetCoreObject()
+    end
+    return nil
+end
+
+local QBCore = getCoreObject()
 local initialized = false
 
 local FALLBACK_ANIMAL_HEAD = { component_id = 1, drawable = 21, texture = 0 }
@@ -73,6 +81,11 @@ AddEventHandler("playerSpawned", function()
     CreateThread(function() Wait(1000); InitializeAppearance() end)
 end)
 
+local function openAppearanceMenu(sourceLabel)
+    SetNuiFocus(true, true)
+    SendNUIMessage({ type = 'appearance_display', payload = { mode = 'full', source = sourceLabel or 'command' } })
+end
+
 RegisterCommand("la_peditor_test", function()
     local ped = PlayerPedId()
     local ok = ped and DoesEntityExist(ped)
@@ -89,12 +102,29 @@ RegisterCommand("la_peditor_test", function()
     end
 end, false)
 
--- client.lua (FiveM)
-local resourceName = GetCurrentResourceName()
+local function registerOpenBinding()
+    local command = Config.OpenCommand or 'pe'
+    if not command or command == '' then return end
+
+    local commandName = command:gsub('^/', '')
+    RegisterCommand(commandName, function()
+        openAppearanceMenu('command')
+    end, false)
+
+    if type(RegisterKeyMapping) == "function" then
+        local key = Config.OpenKey or 'K'
+        if key and key ~= '' then
+            pcall(function()
+                RegisterKeyMapping(commandName, 'Open PEDitor', 'keyboard', key)
+            end)
+        end
+    end
+end
+
+registerOpenBinding()
 
 RegisterCommand('open_peditor', function()
-  SetNuiFocus(true, true) -- give cursor & keyboard focus to NUI
-  SendNUIMessage({ type = 'appearance_display', payload = { message = 'opened from client' } })
+  openAppearanceMenu('debug')
 end)
 
 RegisterNUICallback('nuiPing', function(data, cb)

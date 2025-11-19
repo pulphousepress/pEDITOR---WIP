@@ -14,6 +14,8 @@ cfg.PersistUniforms = cfg.PersistUniforms or true
 cfg.ClothingCost = cfg.ClothingCost or 25
 cfg.ReloadSkinCooldown = cfg.ReloadSkinCooldown or 5000
 cfg.Debug = cfg.Debug or false
+cfg.OpenCommand = cfg.OpenCommand or 'pe'
+cfg.OpenKey = cfg.OpenKey or 'K'
 
 -- Job Settings
 cfg.BossManagedOutfits = cfg.BossManagedOutfits or true
