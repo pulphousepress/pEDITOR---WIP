@@ -9,6 +9,17 @@ local Framework = la.Framework or {}
 local M = {}
 local createdZones = {}
 
+local function getPlayerData()
+    if la and la.GetCoreObject then
+        local core = la.GetCoreObject()
+        if core and core.Functions and type(core.Functions.GetPlayerData) == "function" then
+            local ok, pdata = pcall(core.Functions.GetPlayerData)
+            if ok and pdata then return pdata end
+        end
+    end
+    return nil
+end
+
 local function export_call(exportObj, methodNames, ...)
     if not exportObj then return nil, "no export" end
     for _, name in ipairs(methodNames) do

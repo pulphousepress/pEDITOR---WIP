@@ -20,12 +20,12 @@ AddEventHandler("la_peditor:saveAppearance", function(appearance)
         return
     end
 
-    local license = nil
+    local identifier = nil
     if ServerUtil and type(ServerUtil.GetPlayerIdentifier) == "function" then
-        license = ServerUtil.GetPlayerIdentifier(src)
+        identifier = ServerUtil.GetPlayerIdentifier(src)
     end
 
-    if not license then
+    if not identifier then
         la.log('warn', "[saveAppearance] No identifier for source " .. tostring(src) .. " - aborting save.")
         return
     end
@@ -39,12 +39,12 @@ AddEventHandler("la_peditor:saveAppearance", function(appearance)
 
     -- Upsert into DB
     local query = [[
-        INSERT INTO la_peditor_appearances (license, appearance)
-        VALUES (@license, @appearance)
-        ON DUPLICATE KEY UPDATE appearance = @appearance
+        INSERT INTO skin_data (identifier, skinData)
+        VALUES (@identifier, @appearance)
+        ON DUPLICATE KEY UPDATE skinData = @appearance, updated_at = CURRENT_TIMESTAMP
     ]]
-    ServerUtil.DBExecute(query, { ['@license'] = license, ['@appearance'] = safePayload }, function(res)
-        la.log('info', ("[saveAppearance] Saved appearance for %s (rows=%s)"):format(tostring(license), tostring(res)))
+    ServerUtil.DBExecute(query, { ['@identifier'] = identifier, ['@appearance'] = safePayload }, function(res)
+        la.log('info', ("[saveAppearance] Saved appearance for %s (rows=%s)"):format(tostring(identifier), tostring(res)))
     end)
 end)
 
@@ -52,33 +52,33 @@ end)
 RegisterServerEvent("la_peditor:loadAppearance")
 AddEventHandler("la_peditor:loadAppearance", function()
     local src = source
-    local license = nil
+    local identifier = nil
     if ServerUtil and type(ServerUtil.GetPlayerIdentifier) == "function" then
-        license = ServerUtil.GetPlayerIdentifier(src)
+        identifier = ServerUtil.GetPlayerIdentifier(src)
     end
 
-    if not license then
+    if not identifier then
         la.log('warn', "[loadAppearance] No identifier for source " .. tostring(src) .. " - aborting load.")
         return
     end
 
-    local query = [[ SELECT appearance FROM la_peditor_appearances WHERE license = @license ]]
-    ServerUtil.DBFetchScalar(query, { ['@license'] = license }, function(appearanceJson)
+    local query = [[ SELECT skinData FROM skin_data WHERE identifier = @identifier ]]
+    ServerUtil.DBFetchScalar(query, { ['@identifier'] = identifier }, function(appearanceJson)
         if not appearanceJson then
-            la.log('info', ("[loadAppearance] No appearance found for %s"):format(tostring(license)))
+            la.log('info', ("[loadAppearance] No appearance found for %s"):format(tostring(identifier)))
             return
         end
 
         local ok, appearance = pcall(function() return json.decode(appearanceJson) end)
         if not ok or type(appearance) ~= "table" then
-            la.log('warn', ("[loadAppearance] Failed to decode appearance for %s"):format(tostring(license)))
+            la.log('warn', ("[loadAppearance] Failed to decode appearance for %s"):format(tostring(identifier)))
             return
         end
 
         -- Send to client (only if source is a player)
         if src and src > 0 then
             TriggerClientEvent("la_peditor:applyOutfit", src, appearance)
-            la.log('info', ("[loadAppearance] Sent appearance to %s"):format(tostring(license)))
+            la.log('info', ("[loadAppearance] Sent appearance to %s"):format(tostring(identifier)))
         end
     end)
 end)

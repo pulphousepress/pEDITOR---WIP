@@ -22,7 +22,7 @@
 
 Open source. Standalone; zero framework dependency unless you toggle optional item checks or QBX notify.
 
-One-key menu. Binds a single key/command to open the editor.
+One-key menu. Binds a single key/command to open the editor (default `/pe` and keyboard `K`, both configurable).
 
 Code-driven UI. No brittle XML—components are defined in config (json/lua).
 
@@ -30,7 +30,61 @@ Drag-n-drop assets. Import masks, clothes, hair, beards, etc. by dropping new JS
 
 Server tools. Staff commands to open editor for self/others; set/reset ped models globally or per player.
 
-qbox/qbcore friendly. Works standalone, also plays nice with qbox/qbcore.
+qbox/qbcore friendly. Auto-detects qbx_core/qb-core when present but stays framework-agnostic otherwise.
+
+---
+
+## 🎛 Los Animales / QBox wrapper quick-start
+
+The repo already ships the PEDitor UI, logic, and the Los Animales wrapper in a single resource. Drop it into
+`resources/[local]/la_peditor` and you immediately get:
+
+- Auto-created `skin_data` table (compatible with the upstream PEDitor schema).
+- Base model selection by gender when a player first spawns plus saved skin reapply during reconnects.
+- Theme-compliant exports (`GetPlayerJobOutfits`, management menus, wardrobe helpers) that plug directly into
+  `la_core`/`la_codex` era filters.
+- A `/pe` command + keybind (`K` by default) and NUI bindings so players have a single button entry point.
+- Optional use of `ox_lib` for context menus, callbacks, notify, and target/radial helpers. If `ox_lib` is not
+  installed the resource quietly falls back to vanilla behaviour.
+- Server-side helpers (`ServerUtil.*`, migration helpers) that automatically detect `qbx_core`/`qb-core` but do
+  not require them to start.
+
+### Requirements & ensure order
+
+The resource is self-contained; you do **not** need to install the legacy `PEDitor` resource. Add the following to
+your `server.cfg` (ox_lib is optional but recommended when you want the richer menus):
+
+```cfg
+ensure oxmysql
+ensure ox_lib          # optional, enables menus/callbacks/notify bindings when present
+ensure qbx_core        # optional, detected automatically if running a QBox stack
+ensure la_core         # optional, only if you use its events
+ensure la_peditor
+```
+
+`server/util.lua` and `server/server.lua` will create `skin_data` on startup. Run `la_peditor_test` from the server
+console at any time to verify `qbx_core`/`oxmysql`/`ox_lib` were detected.
+
+### Files & exports
+
+```
+la_peditor/
+  client/      -- UI bindings, wardrobe logic, target/radial helpers
+  game/        -- camera + customization helpers consumed by the NUI
+  server/      -- DB adapters, permissions, framework bridges, test helpers
+  shared/      -- config, compat, locales, blacklist/theme data
+  web/         -- compiled React/Vue UI that the `/pe` command opens
+```
+
+Key exports you can call from other resources:
+
+| Export | Description |
+|--------|-------------|
+| `GetPlayerJobOutfits(isJob)` | Returns job/gang outfits for wardrobe scripts. |
+| `OpenOutfitRoom(outfitRoom)` | Opens a wardrobe configuration (useful for housing). |
+| `CheckDuty()` | Boolean helper for duty-locked clothing rooms. |
+
+Refer to `client/common.lua` for the full list of exports/events.
 
 ---
 
@@ -52,6 +106,7 @@ qbox/qbcore friendly. Works standalone, also plays nice with qbox/qbcore.
 | `/peditor [id]` | Staff only | Opens editor for yourself or target player. |
 | `/setped [id] [model]` | Staff only | Force-sets a model for player (overrides their chosen one). |
 | `/delped [id]` | Staff only | Clears forced model; reverts to player’s saved model. |
+| `/pe` | Everyone | Opens PEDitor immediately (also bound to Config.OpenKey, default `K`). |
 
 Players can open the editor via `/pe` (default command) or by pressing the configured keybind (`Config.OpenKey`, defaults to `F7`).
 
@@ -259,11 +314,10 @@ TriggerEvent('la_peditor:client:applyAsset', 'mask_raccoon_default')
 
 ## 📦 Installation
 
-1. Drop `peditor` into `resources/[local]`.  
-2. Add to your `server.cfg`:  
-   ```cfg
-   ensure peditor
-   ```
+1. Drop `la_peditor` into `resources/[local]`.
+2. Add to your `server.cfg` in the order shown above (`oxmysql`, optional `ox_lib`/`qbx_core`, then `la_peditor`).
+3. Tune `shared/config.lua` for locations, permissions, ped lists, and the `/pe` command/key mapping.
+4. Run `la_peditor_test` from the server console to confirm dependencies are ready.
 
 ---
 

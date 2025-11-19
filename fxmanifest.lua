@@ -2,6 +2,7 @@
 fx_version 'cerulean'
 game 'gta5'
 
+name 'la_peditor'
 author 'Martin / la_peditor'
 description 'la_peditor — 1950s-cartoon-noir appearance editor (qbx_core compatible)'
 version '1.0.0'
@@ -9,7 +10,7 @@ version '1.0.0'
 lua54 'yes'
 
 -- NOTE: keep dependencies minimal and ensure they are started before la_peditor in server.cfg.
--- We prefer qbx_core (you said you use qbx_core). If your server uses qb-core instead, change qbx_core -> qb-core.
+-- We prefer qbx_core when present but do not require it so standalone servers can still load.
 
 dependencies {
     'ox_lib',
@@ -18,13 +19,16 @@ dependencies {
 
 -- Shared (loaded before client/server)
 shared_scripts {
+    'shared/compat.lua',
     'shared/config.lua',
     'shared/common.lua',
+    'shared/locales_init.lua',
     'shared/theme.lua',
     'shared/blacklist.lua',
     'shared/peds.lua',
     'shared/assets.lua',
     'shared/tattoos.lua',
+    'locales/locales.lua',
     'shared/framework/**/*.lua'
 }
 
@@ -61,6 +65,7 @@ server_scripts {
     'server/util.lua',
     'server/permissions.lua',
     'server/server.lua',
+    'server/test.lua',
     'server/framework/**/*.lua'
 }
 
