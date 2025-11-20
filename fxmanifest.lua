@@ -60,7 +60,6 @@ client_scripts {
 -- Server scripts (order: DB adapter + util -> permissions -> main server)
 server_scripts {
     '@oxmysql/lib/MySQL.lua',
-    'server/database/database.lua',
     'server/database/*.lua',
     'server/util.lua',
     'server/permissions.lua',
