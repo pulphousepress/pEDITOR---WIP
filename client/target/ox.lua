@@ -8,6 +8,17 @@ local la = la_peditor
 local M = {}
 local createdZones = {}
 
+local function getPlayerData()
+    if la and la.GetCoreObject then
+        local core = la.GetCoreObject()
+        if core and core.Functions and type(core.Functions.GetPlayerData) == "function" then
+            local ok, pdata = pcall(core.Functions.GetPlayerData)
+            if ok and pdata then return pdata end
+        end
+    end
+    return nil
+end
+
 local function export_call(exportObj, methodNames, ...)
     if not exportObj then return nil, "no export" end
     for _, name in ipairs(methodNames) do
@@ -43,13 +54,11 @@ local function addBoxZone(store)
                 onSelect = function(data) TriggerEvent("la_peditor:client:openClothingShopMenu", false) end,
                 canInteract = function(entity, distance, coords, name)
                     if store.job and store.job ~= nil then
-                        local pd = nil
-                        pcall(function() pd = exports['qb-core']:GetCoreObject().Functions.GetPlayerData() end)
+                        local pd = getPlayerData()
                         if not (pd and pd.job and pd.job.name == store.job) then return false end
                     end
                     if store.gang and store.gang ~= nil then
-                        local pd = nil
-                        pcall(function() pd = exports['qb-core']:GetCoreObject().Functions.GetPlayerData() end)
+                        local pd = getPlayerData()
                         if not (pd and pd.gang and pd.gang.name == store.gang) then return false end
                     end
                     return true
