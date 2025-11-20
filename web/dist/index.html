@@ -66,6 +66,20 @@
       white-space:pre-wrap;
     }
 
+    .assetPanel{
+      margin-top:12px;
+      border:1px solid rgba(255,255,255,0.08);
+      border-radius:8px;
+      padding:10px;
+      background:rgba(0,0,0,0.04);
+    }
+
+    .assetPanel h3{margin:0 0 6px 0;font-size:14px;color:var(--accent);}
+
+    .assetList{font-size:12px;color:var(--muted);line-height:1.4;}
+
+    .assetList strong{color:var(--text);}
+
     .hidden{display:none;}
     .themeTag{position:fixed;right:12px;bottom:12px;font-size:12px;color:var(--muted);pointer-events:none;}
   </style>
@@ -82,11 +96,16 @@
     </div>
 
     <div id="log" class="log" aria-live="polite"></div>
+
+    <div id="assetsPanel" class="assetPanel hidden" aria-live="polite">
+      <h3>Asset Packs</h3>
+      <div id="assetList" class="assetList"></div>
+    </div>
   </div>
 
   <div class="themeTag">theme="1950s-cartoon-noir"</div>
 
   <!-- load the external script -->
-  <script src="script.js"></script>
+  <script src="assets/index.96782610.js"></script>
 </body>
 </html>

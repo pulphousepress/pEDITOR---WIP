@@ -14,8 +14,13 @@ cfg.PersistUniforms = cfg.PersistUniforms or true
 cfg.ClothingCost = cfg.ClothingCost or 25
 cfg.ReloadSkinCooldown = cfg.ReloadSkinCooldown or 5000
 cfg.Debug = cfg.Debug or false
+cfg.OpenCommandEnabled = cfg.OpenCommandEnabled ~= false
 cfg.OpenCommand = cfg.OpenCommand or 'pe'
-cfg.OpenKey = cfg.OpenKey or 'K'
+cfg.OpenCommandDescription = cfg.OpenCommandDescription or 'Open pEditor'
+cfg.OpenKey = cfg.OpenKey or 'F7'
+cfg.DefaultMaskAsset = cfg.DefaultMaskAsset or 'mask_raccoon_default'
+cfg.AssetPackIndex = cfg.AssetPackIndex or 'config/assetpacks/index.json'
+cfg.AssetPacks = cfg.AssetPacks or nil
 
 -- Job Settings
 cfg.BossManagedOutfits = cfg.BossManagedOutfits or true

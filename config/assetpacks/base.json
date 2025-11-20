@@ -1,0 +1,90 @@
+{
+  "name": "Los Animales Base Pack",
+  "description": "Default masks, wardrobe pieces, hairstyles, and beards that ship with pEditor.",
+  "props": {
+    "hats": [
+      {
+        "id": "hat_widebrim_black",
+        "label": "Wide Brim Fedora",
+        "prop_id": 0,
+        "drawable": 52,
+        "texture": 0
+      },
+      {
+        "id": "hat_beret_maroon",
+        "label": "Maroon Beret",
+        "prop_id": 0,
+        "drawable": 14,
+        "texture": 3
+      }
+    ],
+    "glasses": [
+      {
+        "id": "glasses_cat_eye",
+        "label": "Cat-Eye Shades",
+        "prop_id": 1,
+        "drawable": 14,
+        "texture": 5
+      }
+    ],
+    "bracelets": [
+      {
+        "id": "bracelet_silver_chain",
+        "label": "Silver Chain Bracelet",
+        "prop_id": 7,
+        "drawable": 5,
+        "texture": 0
+      }
+    ]
+  },
+  "components": {
+    "masks": [
+      {
+        "id": "mask_raccoon_default",
+        "label": "Raccoon Noir Mask",
+        "component_id": 1,
+        "drawable": 21,
+        "texture": 0
+      }
+    ],
+    "jackets": [
+      {
+        "id": "jacket_detective",
+        "label": "Detective Overcoat",
+        "component_id": 11,
+        "drawable": 27,
+        "texture": 0
+      }
+    ],
+    "pants": [
+      {
+        "id": "pants_highwaist",
+        "label": "High-Waist Slacks",
+        "component_id": 4,
+        "drawable": 10,
+        "texture": 0
+      }
+    ]
+  },
+  "hair": [
+    {
+      "id": "hair_pompadour",
+      "label": "Pompadour",
+      "drawable": 12,
+      "texture": 2,
+      "color": 2,
+      "highlight": 1
+    }
+  ],
+  "beards": [
+    {
+      "id": "beard_pulp",
+      "label": "Pulp Goatee",
+      "overlay": 1,
+      "style": 10,
+      "opacity": 0.7,
+      "color": 1,
+      "highlight": 1
+    }
+  ]
+}
